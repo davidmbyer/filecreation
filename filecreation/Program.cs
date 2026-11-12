@@ -23,15 +23,21 @@ namespace filecreation
            createsfile();
           createeifile();
                //Console.WriteLine(getdate(extract("26022715092600180185000998054218081")));
-               Console.ReadLine();
-           }
+                Console.ReadLine();
+            }
 
            static SqlConnectionStringBuilder CreateConnectionStringBuilder()
            {
-               string connectionString = Environment.GetEnvironmentVariable("FILECREATION_CONNECTION_STRING");
+               string connectionStringPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "connectionString.txt");
+               if (!File.Exists(connectionStringPath))
+               {
+                   throw new FileNotFoundException("Create connectionString.txt next to the executable and put the SQL connection string in it.", connectionStringPath);
+               }
+
+               string connectionString = File.ReadAllText(connectionStringPath).Trim();
                if (string.IsNullOrWhiteSpace(connectionString))
                {
-                   throw new InvalidOperationException("Set the FILECREATION_CONNECTION_STRING environment variable.");
+                   throw new InvalidOperationException("The connectionString.txt file is empty.");
                }
 
                return new SqlConnectionStringBuilder(connectionString);
